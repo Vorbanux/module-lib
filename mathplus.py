@@ -19,13 +19,10 @@ def identity(m:int):
         data.append([])
         for j in range(n):
             if i == j:
-                data[i].append(1)
+                data[i].append(1.0)
                 continue
-            data[i].append(0)
+            data[i].append(0.0)
     return Matrix(matrixs2=data)
-
-def hi():
-    print("hello world!")
 
 class Matrix:
     def __init__(self, m1: int=None, n1: int=None, matrixs2: list=None):
@@ -64,7 +61,7 @@ class Matrix:
             for i in range(m1):
                 self.matrix.append([])
                 for j in range(n1):
-                    self.matrix[i].append(0)
+                    self.matrix[i].append(0.0)
             return
         raise ValueError("Input m and n (matrix size: m*n) or input matrix (MATRIxS: list [[x11, x12], [x21, x22]] etc.)")
 
@@ -95,7 +92,7 @@ class Matrix:
             raise ValueError("You aren't input float, int or complex number")
     
     def addition(self, other: object):
-        if isinstance(other, Matrix):
+        if type(other) == Matrix:
             if self.m == other.m and self.n == other.n:
                 newmatrix = []
                 for i in range(self.m):
@@ -112,7 +109,7 @@ class Matrix:
         return self.addition(Mother)
     
     def subscribe(self, other: object):
-        if isinstance(other, Matrix):
+        if type(other) == Matrix:
             if self.m == other.m and self.n == other.n:
                 newmatrix = []
                 for i in range(self.m):
@@ -130,14 +127,13 @@ class Matrix:
         
     def multiply(self, other: object or int or float or complex):
             result_data = None
-            if isinstance(other, Matrix):
+            if type(other) == Matrix:
                 if self.n != other.m:
                     raise ValueError("Matrixs must have the same dimensions for multiply")
                 result_data = [[0 for _ in range(other.n)] for _ in range(self.m)]
-
-                for i in range(self.m):          # Идем по строкам A
-                    for j in range(other.n):     # Идем по столбцам B
-                        for k in range(self.n):  # Считаем сумму (скалярное произведение)
+                for i in range(self.m):
+                    for j in range(other.n):
+                        for k in range(self.n):
                             result_data[i][j] += self.matrix[i][k] * other.matrix[k][j]
             elif type(other) == int or type(other) == float or type(other) == complex:
                 result_data = []
@@ -150,6 +146,9 @@ class Matrix:
             return Matrix(matrixs2=result_data)
     
     def __mul__(self, Mother):
+        return self.multiply(Mother)
+    
+    def __rmul__(self, Mother):
         return self.multiply(Mother)
     
     def transpose(self):
@@ -167,7 +166,7 @@ class Matrix:
     def __len__(self):
         return self.size
     
-    def det_gauss(self) -> float or int or complex:
+    def det(self) -> float or int or complex:
         if not self.quard:
             raise ValueError("Determinant can only be calculated for square matrixs")
         a = [[item for item in row] for row in self.matrix]
@@ -195,14 +194,43 @@ class Matrix:
                 determinant_value = determinant_value.real
         return determinant_value
     
+    def inverse(self):
+        if self.det is None:
+            raise ValueError("Det isn't found")
+        if IsEqual_abs(self.det(), 0):
+            raise ValueError("Inverse matrix isn't found. det = 0")
+        return (1 / self.det()) * self.adjugate().transpose()
+    
     def __pow__(self, other):
         data = self
-        a = other
         if other == 0:
             return 1
+        if other < 0:
+            data.inverse()
         for _ in range(1, abs(other)):
             data *= data
         return data
+    
+    def adjugate(self):
+        if not self.quard:
+            raise ValueError("Adjugate matrix can only be calculated for square matrices")
+
+        n = self.m
+        if n == 1:
+            return Matrix(matrixs2=[[1]])
+
+        adj_data = [[0 for _ in range(n)] for _ in range(n)]
+
+        for i in range(n):
+            for j in range(n):
+                remaining_rows = self.matrix[:i] + self.matrix[i+1:]
+                minor_data = [row[:j] + row[j+1:] for row in remaining_rows]
+                minor_matrix = Matrix(matrixs2=minor_data)
+                minor_det = minor_matrix.det()
+                sign = (-1) ** (i + j)
+                adj_data[i][j] = sign * minor_det
+
+        return Matrix(matrixs2=adj_data)
     
 if __name__ == "__main__":
     exit()
