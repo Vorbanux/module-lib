@@ -1,6 +1,3 @@
-if __name__ == "__main__":
-    exit()
-
 import sys
 
 eps = sys.float_info.epsilon
@@ -11,34 +8,47 @@ def IsEqual(a, b):
 def IsEqual_abs(a, b):
     return abs(abs(a) - abs(b)) < eps
 
-class Matric:
-    def __init__(self, m1: int=None, n1: int=None, matrics2: list=None):
-        self.matric = None
+def identity(m:int):
+    n = m
+    if m <= 0 or n <= 0:
+        raise ValueError("m or n < 0")
+    elif m != n:
+        raise ValueError("matrix isn't quard")
+    data = []
+    for i in range(m):
+        data.append([])
+        for j in range(n):
+            if i == j:
+                data[i].append(1)
+                continue
+            data[i].append(0)
+    return Matrix(matrixs2=data)
+
+class Matrix:
+    def __init__(self, m1: int=None, n1: int=None, matrixs2: list=None):
+        self.matrix = None
         self.size = None
         self.m = None
         self.n = None
-        if matrics2:
-            self.m = len(matrics2)
-            self.n = len(matrics2[0])
-            for i in matrics2:
+        if matrixs2:
+            self.m = len(matrixs2)
+            self.n = len(matrixs2[0])
+            for i in matrixs2:
                 if type(i) == list:
                     for j in i:
                         if type(j) == list:
-                            print("[ERROR]: List is not matrice. It include not only int and float type data.")
-                            return None
+                            raise ValueError("List is not matrix. It include not only int and float type data")
                         if type(j) != float and type(j) != int and type(j) != complex:
-                            print("[ERROR]: List is not matrice. It include not only int and float type data.")
-                            return None
+                            raise ValueError("List is not matrix. It include not only int and float type data")
                 else:
-                    print("[ERROR]: List is not matrice (MATRICES: list [[x11, x12], [x21, x22]] etc.).")
-                    return None
+                    raise ValueError("List is not matrix (MATRIXS: list [[x11, x12], [x21, x22]] etc.)")
                 if self.m - self.n == 0:
                     self.quard = True
                 else:
                     self.quard = False
                 self.size = self.m * self.n
-                self.matric = matrics2
-                return None
+                self.matrix = matrixs2
+                return
         if m1 and n1:
             self.m = m1
             self.n = n1
@@ -47,25 +57,24 @@ class Matric:
                 self.quard = True
             else:
                 self.quard = False
-            self.matric = []
+            self.matrix = []
             for i in range(m1):
-                self.matric.append([])
+                self.matrix.append([])
                 for j in range(n1):
-                    self.matric[i].append(0)
-            return None
-        print("[ERROR]: input m and n (matric size: m*n) or input matric (MATRICES: list [[x11, x12], [x21, x22]] etc.).")
-        return None
+                    self.matrix[i].append(0)
+            return
+        raise ValueError("Input m and n (matrix size: m*n) or input matrix (MATRIxS: list [[x11, x12], [x21, x22]] etc.)")
 
     def __repr__(self):
         txt = ""
-        for i in self.matric:
+        for i in self.matrix:
             txt = f"{txt}{i}, "
         txt = f"{txt}\nlines: {self.m}, columns: {self.n}, size: {self.size}, quard: {self.quard}."
         return txt
     
     def __str__(self):
         txt = ""
-        for i in self.matric:
+        for i in self.matrix:
             txt = f"{txt}{i}"
             txt = f"{txt}\n"
         txt = txt.replace(',', ' ')
@@ -73,52 +82,124 @@ class Matric:
     
     def edit(self, m: int, n: int, new: float or int or complex):
             if self.m < m or self.n < n or m <= 0 or n <= 0:
-                print("[ERROR]: There are line or column doesn't exist")
-                return False
+                raise ValueError("There are line or column doesn't exist")
             if type(new) == float or type(new) == int or type(new) == complex:
-                self.matric[m-1][n-1] = new
-                return True
-            print("[ERROR]: You aren't input float number.")
-            return False
+                if type(new) == int or type(new) == float or type(new) == complex:
+                    self.matrix[m-1][n-1] = new
+                    return True
+                else:
+                    raise ValueError("Type of new variable isn't int, float or complex")
+            raise ValueError("You aren't input float, int or complex number")
     
-    def addition(self, matrice2: object):
-        if self.size == matrice2.size:
-            newmatric = []
-            for i in range(self.m):
-                print(i)
-                newmatric.append([])
-                for j in range(self.n):
-                    #print(j)
-                    newmatric[i].append(self.matric[i][j] + matrice2.matric[i][j])
-            return Matric(matrics2=newmatric)
+    def addition(self, other: object):
+        if isinstance(other, Matrix):
+            if self.m == other.m and self.n == other.n:
+                newmatrix = []
+                for i in range(self.m):
+                    newmatrix.append([])
+                    for j in range(self.n):
+                        newmatrix[i].append(self.matrix[i][j] + other.matrix[i][j])
+                return Matrix(matrixs2=newmatrix)
+            else:
+                raise ValueError("Matrixs must have the same dimensions for addition")
         else:
-            print("[ERROR]: Matrices must have the same dimensions for addition")
-            return None
+            raise ValueError("First value isn't matrix")
     
-    def subscribe(self, matrice2: object):
-        if self.size == matrice2.size:
-            newmatric = []
-            for i in range(self.m):
-                print(i)
-                newmatric.append([])
-                for j in range(self.n):
-                    #print(j)
-                    newmatric[i].append(self.matric[i][j] - matrice2.matric[i][j])
-            return Matric(matrics2=newmatric)
+    def __add__(self, Mother):
+        return self.addition(Mother)
+    
+    def subscribe(self, other: object):
+        if isinstance(other, Matrix):
+            if self.m == other.m and self.n == other.n:
+                newmatrix = []
+                for i in range(self.m):
+                    newmatrix.append([])
+                    for j in range(self.n):
+                        newmatrix[i].append(self.matrix[i][j] - other.matrix[i][j])
+                return Matrix(matrixs2=newmatrix)
+            else:
+                raise ValueError("Matrixs must have the same dimensions for subscribe")
         else:
-            print("[ERROR]: Matrices must have the same dimensions for subscribe")
-            return None
+            raise ValueError("First value isn't matrix")
+    
+    def __sub__(self, Mother):
+        return self.subscribe(Mother)
         
-    def multiply(self, other):
-    # Проверка: n первой должно быть равно m второй
-    if self.n != other.m:
-        print("[ERROR]: Matrices must have the same dimensions for multiply")
-        return None
-    result_data = [[0 for _ in range(other.n)] for _ in range(self.m)]
+    def multiply(self, other: object or int or float or complex):
+            result_data = None
+            if isinstance(other, Matrix):
+                if self.n != other.m:
+                    raise ValueError("Matrixs must have the same dimensions for multiply")
+                result_data = [[0 for _ in range(other.n)] for _ in range(self.m)]
 
-    for i in range(self.m):          # Идем по строкам A
-        for j in range(other.n):     # Идем по столбцам B
-            for k in range(self.n):  # Считаем сумму (скалярное произведение)
-                result_data[i][j] += self.matric[i][k] * other.matric[k][j]
+                for i in range(self.m):          # Идем по строкам A
+                    for j in range(other.n):     # Идем по столбцам B
+                        for k in range(self.n):  # Считаем сумму (скалярное произведение)
+                            result_data[i][j] += self.matrix[i][k] * other.matrix[k][j]
+            elif type(other) == int or type(other) == float or type(other) == complex:
+                result_data = []
+                for i in range(self.m):
+                    result_data.append([])
+                    for j in range(self.n):
+                        result_data[i].append(self.matrix[i][j] * other)
+            else:
+                raise ValueError("First value isn't matrix, int, float or complex")
+            return Matrix(matrixs2=result_data)
     
-    return Matrix(result_data)
+    def __mul__(self, Mother):
+        return self.multiply(Mother)
+    
+    def transpose(self):
+        new_data = [
+            [self.matrix[i][j] for i in range(self.m)]
+            for j in range(self.n)
+        ]
+        return Matrix(matrixs2=new_data)
+    
+    def take(self, m:int, n: int):
+        if m <= 0 or n <= 0:
+            raise ValueError("m or n < 0")
+        return self.matrix[m-1][n-1]
+    
+    def __len__(self):
+        return self.size
+    
+    def det_gauss(self) -> float or int or complex:
+        if not self.quard:
+            raise ValueError("Determinant can only be calculated for square matrixs")
+        a = [[item for item in row] for row in self.matrix]
+        n = self.m
+        det_sign = 1
+        for i in range(n):
+            pivot_row = i
+            for r in range(i + 1, n):
+                if abs(a[r][i]) > abs(a[pivot_row][i]):
+                    pivot_row = r
+            if pivot_row != i:
+                a[i], a[pivot_row] = a[pivot_row], a[i]
+                det_sign *= -1
+            if abs(a[i][i]) < eps:
+                return 0
+            for r in range(i + 1, n):
+                factor = a[r][i] / a[i][i]
+                for c in range(i, n):
+                    a[r][c] -= factor * a[i][c]
+        determinant_value = det_sign
+        for i in range(n):
+            determinant_value *= a[i][i]
+        if isinstance(determinant_value, complex):
+            if abs(determinant_value.imag) < eps:
+                determinant_value = determinant_value.real
+        return determinant_value
+    
+    def __pow__(self, other):
+        data = self
+        a = other
+        if other == 0:
+            return 1
+        for _ in range(1, abs(other)):
+            data *= data
+        return data
+    
+if __name__ == "__main__":
+    exit()
