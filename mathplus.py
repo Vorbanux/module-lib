@@ -91,7 +91,7 @@ class Matrix:
                     raise ValueError("Type of new variable isn't int, float or complex")
             raise ValueError("You aren't input float, int or complex number")
     
-    def addition(self, other: object):
+    def addition(self, other: Matrix):
         if type(other) == Matrix:
             if self.m == other.m and self.n == other.n:
                 newmatrix = []
@@ -108,7 +108,7 @@ class Matrix:
     def __add__(self, Mother):
         return self.addition(Mother)
     
-    def subscribe(self, other: object):
+    def subscribe(self, other: Matrix):
         if type(other) == Matrix:
             if self.m == other.m and self.n == other.n:
                 newmatrix = []
@@ -125,7 +125,7 @@ class Matrix:
     def __sub__(self, Mother):
         return self.subscribe(Mother)
         
-    def multiply(self, other: object or int or float or complex):
+    def multiply(self, other: Matrix or int or float or complex):
             result_data = None
             if type(other) == Matrix:
                 if self.n != other.m:
@@ -145,11 +145,13 @@ class Matrix:
                 raise ValueError("First value isn't matrix, int, float or complex")
             return Matrix(matrixs2=result_data)
     
-    def __mul__(self, Mother):
-        return self.multiply(Mother)
+    def __mul__(self, other1):
+        return self.multiply(other1)
     
-    def __rmul__(self, Mother):
-        return self.multiply(Mother)
+    def __rmul__(self, other1):
+        if type(other1) == int or type(other1) == float or type(other1) == complex:
+            return self.multiply(other1)
+        return other1.multiply(self)
     
     def transpose(self):
         new_data = [
@@ -206,9 +208,13 @@ class Matrix:
         if other == 0:
             return 1
         if other < 0:
-            data.inverse()
+            data = data.inverse()
         for _ in range(1, abs(other)):
             data *= data
+        
+        for i in range(data.m):
+            for j in range(data.n):
+                data.matrix[i][j] = int(data.take(i+1, j+1) * 10**3) / 10**3
         return data
     
     def adjugate(self):
@@ -232,5 +238,20 @@ class Matrix:
 
         return Matrix(matrixs2=adj_data)
     
+    def divide(self, other: Matrix or int or float or complex):
+        if other == 0:
+            raise ValueError("It is impossible to divide")
+        return self * other**-1
+    
+    def __truediv__(self, other1):
+        return self.divide(other1)
+    
+    def __rtruediv__(self, other1):
+        if type(other1) == int or type(other1) == float or type(other1) == complex:
+            return other1 * self**-1
+        return other1.divide(self)
+
+
+
 if __name__ == "__main__":
     exit()
