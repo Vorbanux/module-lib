@@ -8,7 +8,7 @@ def IsEqual(a, b):
 def IsEqual_abs(a, b):
     return abs(abs(a) - abs(b)) < eps
 
-def identity(m:int):
+def identity(m: int):
     n = m
     if m <= 0 or n <= 0:
         raise ValueError("m or n < 0")
