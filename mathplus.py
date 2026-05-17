@@ -86,7 +86,7 @@ class Matrix:
             if type(new) == float or type(new) == int or type(new) == complex:
                 if type(new) == int or type(new) == float or type(new) == complex:
                     self.matrix[m-1][n-1] = new
-                    return True
+                    return self
                 else:
                     raise ValueError("Type of new variable isn't int, float or complex")
             raise ValueError("You aren't input float, int or complex number")
@@ -214,7 +214,7 @@ class Matrix:
         
         for i in range(data.m):
             for j in range(data.n):
-                data.matrix[i][j] = int(data.take(i+1, j+1) * 10**3) / 10**3
+                data.matrix[i][j] = int(data.get(i+1, j+1) * 10**3) / 10**3
         return data
     
     def adjugate(self) -> Matrix:
