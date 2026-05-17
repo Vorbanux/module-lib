@@ -160,7 +160,7 @@ class Matrix:
         ]
         return Matrix(matrixs2=new_data)
     
-    def take(self, m:int, n: int) -> int or float or complex:
+    def get(self, m:int, n: int) -> int or float or complex:
         if m <= 0 or n <= 0:
             raise ValueError("m or n < 0")
         return self.matrix[m-1][n-1]
