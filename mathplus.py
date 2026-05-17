@@ -214,7 +214,7 @@ class Matrix:
         
         for i in range(data.m):
             for j in range(data.n):
-                data.matrix[i][j] = int(data.get(i+1, j+1) * 10**3) / 10**3
+                data.matrix[i][j] = data.get(i+1, j+1)
         return data
     
     def adjugate(self) -> Matrix:
