@@ -80,7 +80,7 @@ class Matrix:
         txt = txt.replace(',', ' ')
         return txt
     
-    def edit(self, m: int, n: int, new: float or int or complex):
+    def edit(self, m: int, n: int, new: float or int or complex) -> Matrix:
             if self.m < m or self.n < n or m <= 0 or n <= 0:
                 raise ValueError("There are line or column doesn't exist")
             if type(new) == float or type(new) == int or type(new) == complex:
@@ -91,7 +91,7 @@ class Matrix:
                     raise ValueError("Type of new variable isn't int, float or complex")
             raise ValueError("You aren't input float, int or complex number")
     
-    def addition(self, other: Matrix):
+    def addition(self, other: Matrix) -> Matrix:
         if type(other) == Matrix:
             if self.m == other.m and self.n == other.n:
                 newmatrix = []
@@ -108,7 +108,7 @@ class Matrix:
     def __add__(self, Mother):
         return self.addition(Mother)
     
-    def subscribe(self, other: Matrix):
+    def subscribe(self, other: Matrix) -> Matrix:
         if type(other) == Matrix:
             if self.m == other.m and self.n == other.n:
                 newmatrix = []
@@ -125,7 +125,7 @@ class Matrix:
     def __sub__(self, Mother):
         return self.subscribe(Mother)
         
-    def multiply(self, other: Matrix or int or float or complex):
+    def multiply(self, other: Matrix or int or float or complex) -> Matrix:
             result_data = None
             if type(other) == Matrix:
                 if self.n != other.m:
@@ -153,14 +153,14 @@ class Matrix:
             return self.multiply(other1)
         return other1.multiply(self)
     
-    def transpose(self):
+    def transpose(self) -> Matrix:
         new_data = [
             [self.matrix[i][j] for i in range(self.m)]
             for j in range(self.n)
         ]
         return Matrix(matrixs2=new_data)
     
-    def take(self, m:int, n: int):
+    def take(self, m:int, n: int) -> int or float or complex:
         if m <= 0 or n <= 0:
             raise ValueError("m or n < 0")
         return self.matrix[m-1][n-1]
@@ -196,7 +196,7 @@ class Matrix:
                 determinant_value = determinant_value.real
         return determinant_value
     
-    def inverse(self):
+    def inverse(self) -> Matrix:
         if self.det is None:
             raise ValueError("Det isn't found")
         if IsEqual_abs(self.det(), 0):
@@ -217,7 +217,7 @@ class Matrix:
                 data.matrix[i][j] = int(data.take(i+1, j+1) * 10**3) / 10**3
         return data
     
-    def adjugate(self):
+    def adjugate(self) -> Matrix:
         if not self.quard:
             raise ValueError("Adjugate matrix can only be calculated for square matrices")
 
@@ -238,7 +238,7 @@ class Matrix:
 
         return Matrix(matrixs2=adj_data)
     
-    def divide(self, other: Matrix or int or float or complex):
+    def divide(self, other: Matrix or int or float or complex) -> Matrix:
         if other == 0:
             raise ValueError("It is impossible to divide")
         return self * other**-1
@@ -250,6 +250,42 @@ class Matrix:
         if type(other1) == int or type(other1) == float or type(other1) == complex:
             return other1 * self**-1
         return other1.divide(self)
+    
+    def rank(self) -> int:
+        if self.matrix is None:
+            raise ValueError("Matrix is empty")
+        a = [[item for item in row] for row in self.matrix]
+        m = self.m
+        n = self.n
+        row = 0
+        col = 0
+        while row < m and col < n:
+            pivot_row = row
+            for r in range(row + 1, m):
+                if abs(a[r][col]) > abs(a[pivot_row][col]):
+                    pivot_row = r
+            if pivot_row != row:
+                a[row], a[pivot_row] = a[pivot_row], a[row]
+            if abs(a[row][col]) < eps:
+                col += 1
+                continue
+            for r in range(row + 1, m):
+                factor = a[r][col] / a[row][col]
+                for c in range(col, n):
+                    a[r][c] -= factor * a[row][c]
+            row += 1
+            col += 1
+        real_rank = 0
+        for r in range(m):
+            line_has_numbers = False
+            for x in a[r]:
+                if abs(x) > eps:
+                    line_has_numbers = True
+                    break
+            if line_has_numbers:
+                real_rank += 1 
+        return real_rank
+
 
 
 
