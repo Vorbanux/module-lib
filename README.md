@@ -1,4 +1,4 @@
-# MathPlus (`module-lib`)
+# MathPlus
 
 A lightweight, low-level Linear Algebra and Matrix manipulation library for Python. Developed from scratch, this module provides essential tools for multi-dimensional array transformations, vector spaces, and computer graphics math extensions without relying on heavy external dependencies.
 
